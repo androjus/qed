@@ -1,0 +1,26 @@
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+line_length = 79
+skip_gitignore = true
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "app/"
+disallow_incomplete_defs = true
+warn_redundant_casts = true
+no_implicit_optional = true
+no_implicit_reexport = true
+strict_equality = true
+namespace_packages = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "celery.*",
+    "sklearn.*",
+]
+ignore_missing_imports = true

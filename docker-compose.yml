@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+
+  redis:
+    image: redis:7.2.4
+
+  qed:
+    build: ./app
+    volumes:
+      - ./app:/app
+    image: qed
+    container_name: qed
+    ports:
+      - "8081:8081"
+
+  qed_worker:
+    container_name: qed_worker
+    build: ./app
+    command: celery -A worker worker --loglevel=info
+    volumes:
+      - ./app:/app
+    depends_on:
+      - redis
+      - qed
