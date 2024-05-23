@@ -3,7 +3,7 @@ from datetime import datetime
 from api.schemas.train import TrainData, TrainRun, TrainStatus
 from fastapi import APIRouter, HTTPException
 from infrastructure.representativeness import Representativeness
-from worker import REDIS_TASK_KEY, celery, redis_instance
+from worker import celery, redis_instance
 
 router = APIRouter(
     prefix="/train",
@@ -29,7 +29,7 @@ async def run_training(input_data: TrainData) -> dict:
                         status="error",
                         error="Training is currently ongoing. The next one can be ordered after the current one ends. The training status can be checked using the returned ID.",
                     )
-                    return result
+                    return result.model_dump(exclude_defaults=True, exclude_none=True)
 
     task = model.train(input_data)
     return TrainRun(task_id=task.id, status="success").model_dump(
@@ -43,11 +43,7 @@ async def run_training(input_data: TrainData) -> dict:
     description="Training status under a given ID",
 )
 def status(task_id: str) -> dict:
-    task_id = task_id or redis_instance.get(REDIS_TASK_KEY)
-    if (
-        task_id is None
-        or redis_instance.get(f"celery-task-meta-{task_id}") is None
-    ):
+    if task_id is None or redis_instance.get(f"celery-task-meta-{task_id}") is None:
         raise HTTPException(
             status_code=400, detail=f"Could not determine task {task_id}"
         )
@@ -73,9 +69,7 @@ def status(task_id: str) -> dict:
         result = TrainStatus(
             id=task_result.task_id,
             status="running",
-            time_start=datetime.timestamp(
-                task_result.info.get("data_created")
-            ),
+            time_start=datetime.timestamp(task_result.info.get("data_created")),
         )
 
     return result.model_dump(exclude_defaults=True, exclude_none=True)

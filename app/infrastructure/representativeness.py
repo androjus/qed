@@ -48,7 +48,7 @@ class Representativeness(metaclass=ModelsMeta):
             return None
 
     def train(self, data: TrainData) -> result.AsyncResult:
-        task = training.delay(data.dict())
+        task = training.delay(data.model_dump())
         return task
 
     def predict(self, X: list[list[float]]) -> list[float]:

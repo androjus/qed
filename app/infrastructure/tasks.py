@@ -2,8 +2,9 @@ import pickle
 from datetime import datetime, timezone
 from typing import Optional, Tuple
 
+import numpy as np
 from api.schemas.train import TrainData
-from celery import group
+from celery import Task, group
 from celery.result import allow_join_result
 from config import Config
 from infrastructure.utils import deserialize_array, serialize_array, split_data
@@ -13,16 +14,14 @@ from worker import celery
 
 
 @celery.task(name="train_model", bind=True)
-def training(self, data: dict) -> Tuple[datetime, Optional[str]]:
+def training(self: Task, data: dict) -> Tuple[datetime, Optional[str]]:
     try:
         data_created = datetime.now(timezone.utc)
-        self.update_state(
-            state="PROGRESS", meta={"data_created": data_created}
-        )
+        self.update_state(state="PROGRESS", meta={"data_created": data_created})
         data_obj = TrainData(**data)
         data_obj.data = split_data(data_obj.data, data_obj.L)
         tasks = [
-            train_representativeness.s(serialize_array(dataset), data_obj.K)
+            train_representativeness.s(serialize_array(np.array(dataset)), data_obj.K)
             for dataset in data_obj.data
         ]
         result_group = group(tasks)()
@@ -37,7 +36,7 @@ def training(self, data: dict) -> Tuple[datetime, Optional[str]]:
 
 
 @celery.task()
-def train_representativeness(dataset: str, K: int):
+def train_representativeness(dataset: str, K: int) -> bytes:
     subset = deserialize_array(dataset)
     nbrs = NearestNeighbors(n_neighbors=K, algorithm="auto").fit(subset)
     distances, _ = nbrs.kneighbors(subset)
