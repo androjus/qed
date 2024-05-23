@@ -11,7 +11,9 @@ class TrainData(BaseModel):
 
 
 class TrainRun(BaseModel):
+    status: str
     task_id: str
+    error: Optional[str] = None
 
 
 class TrainStatus(BaseModel):

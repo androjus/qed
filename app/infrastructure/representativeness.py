@@ -22,6 +22,22 @@ class ModelsMeta(type):
 
 
 class Representativeness(metaclass=ModelsMeta):
+    """
+    Represents a model for calculating representativeness.
+
+    This class provides functionality for training and predicting the representativeness
+    of data using a set of models.
+
+    Attributes:
+        models (Optional[list]): A list containing loaded models for representativeness prediction.
+
+    Methods:
+        __init__: Initializes the Representativeness class by loading the models.
+        _load_model: Loads the model from the specified path.
+        train: Trains the model using the provided training data.
+        predict: Predicts the representativeness of the input data.
+    """
+
     def __init__(self) -> None:
         self.models = self._load_model()
 

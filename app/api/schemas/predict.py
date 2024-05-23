@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -6,4 +8,6 @@ class PredictInput(BaseModel):
 
 
 class PredictResult(BaseModel):
-    result: list[float]
+    status: str
+    result: Optional[list[float]] = None
+    error: Optional[str] = None

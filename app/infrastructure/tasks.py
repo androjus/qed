@@ -1,5 +1,4 @@
 import pickle
-import time
 from datetime import datetime, timezone
 from typing import Optional, Tuple
 
@@ -13,7 +12,7 @@ from sklearn.neighbors import NearestNeighbors
 from worker import celery
 
 
-@celery.task(bind=True)
+@celery.task(name="train_model", bind=True)
 def training(self, data: dict) -> Tuple[datetime, Optional[str]]:
     try:
         data_created = datetime.now(timezone.utc)
@@ -38,7 +37,7 @@ def training(self, data: dict) -> Tuple[datetime, Optional[str]]:
 
 
 @celery.task()
-def train_representativeness(dataset, K):
+def train_representativeness(dataset: str, K: int):
     subset = deserialize_array(dataset)
     nbrs = NearestNeighbors(n_neighbors=K, algorithm="auto").fit(subset)
     distances, _ = nbrs.kneighbors(subset)
