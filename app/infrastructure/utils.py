@@ -1,10 +1,10 @@
 import json
-from typing import Any
 
 import numpy as np
+from custom_types import MATRIX
 
 
-def split_data(data: list[list[float]], L: int) -> list[list[float]]:
+def split_data(data: MATRIX, L: int) -> MATRIX:
     np.random.shuffle(data)
     split_data = np.array_split(data, L)
     return [sub_array.tolist() for sub_array in split_data]

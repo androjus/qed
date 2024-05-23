@@ -5,6 +5,7 @@ import numpy as np
 from api.schemas.train import TrainData
 from celery import result
 from config import Config
+from custom_types import MATRIX, VECTOR
 from infrastructure.tasks import training
 
 
@@ -51,7 +52,7 @@ class Representativeness(metaclass=ModelsMeta):
         task = training.delay(data.model_dump())
         return task
 
-    def predict(self, X: list[list[float]]) -> list[float]:
+    def predict(self, X: MATRIX) -> VECTOR:
         self.models = self._load_model()
         predictions = np.array([model.predict(X) for model in self.models])
         return predictions.mean(axis=0).tolist()

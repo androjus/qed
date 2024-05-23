@@ -1,11 +1,11 @@
-from datetime import datetime
 from typing import Optional
 
+from custom_types import MATRIX
 from pydantic import BaseModel
 
 
 class TrainData(BaseModel):
-    data: list[list[float]]
+    data: MATRIX
     L: int
     K: int
 

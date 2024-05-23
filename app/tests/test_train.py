@@ -1,6 +1,3 @@
-from worker import celery
-
-
 def test_run_training(client, mock_celery_and_redis, input_train_data):
     response = client.post("api/train/run", json=input_train_data.model_dump())
     assert response.status_code == 200
@@ -10,7 +7,9 @@ def test_run_training(client, mock_celery_and_redis, input_train_data):
 
 
 def test_status_success(client, mock_celery_and_redis):
-    response = client.get("api/train/check", params={"task_id": "mock_task_id"})
+    response = client.get(
+        "api/train/check", params={"task_id": "mock_task_id"}
+    )
     assert response.status_code == 200
     json_response = response.json()
     assert json_response["id"] == "mock_task_id"

@@ -65,7 +65,9 @@ def mock_celery_and_redis(monkeypatch):
     def mock_active_tasks(task):
         return {"task_ongoing": [{"id": "123", "name": "Task 1"}]}
 
-    monkeypatch.setattr("worker.celery.control.inspect.active", mock_active_tasks)
+    monkeypatch.setattr(
+        "worker.celery.control.inspect.active", mock_active_tasks
+    )
     monkeypatch.setattr(celery, "AsyncResult", MockAsyncResult)
     monkeypatch.setattr(redis_instance, "get", lambda x: "mock_task_id")
 

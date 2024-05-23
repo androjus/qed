@@ -17,11 +17,15 @@ from worker import celery
 def training(self: Task, data: dict) -> Tuple[datetime, Optional[str]]:
     try:
         data_created = datetime.now(timezone.utc)
-        self.update_state(state="PROGRESS", meta={"data_created": data_created})
+        self.update_state(
+            state="PROGRESS", meta={"data_created": data_created}
+        )
         data_obj = TrainData(**data)
         data_obj.data = split_data(data_obj.data, data_obj.L)
         tasks = [
-            train_representativeness.s(serialize_array(np.array(dataset)), data_obj.K)
+            train_representativeness.s(
+                serialize_array(np.array(dataset)), data_obj.K
+            )
             for dataset in data_obj.data
         ]
         result_group = group(tasks)()
