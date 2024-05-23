@@ -20,6 +20,12 @@ def run_predict(input_data: PredictInput) -> dict:
             status="success", result=model.predict(input_data.data)
         ).model_dump(exclude_defaults=True, exclude_none=True)
     except Exception as e:
-        return PredictResult(status="error", error=str(e)).model_dump(
-            exclude_defaults=True, exclude_none=True
-        )
+        if str(e) == "'NoneType' object is not iterable":
+            return PredictResult(
+                status="error",
+                error="No trained model. Do some training before using predict.",
+            ).model_dump(exclude_defaults=True, exclude_none=True)
+        else:
+            return PredictResult(status="error", error=str(e)).model_dump(
+                exclude_defaults=True, exclude_none=True
+            )
