@@ -39,11 +39,12 @@ Documentation available at `<address:8081>/docs`.
  - [GET] /api/train/check/<task_id> - Checking the training status of a particular model
  - [POST] /api/predict/use - Use of the last trained model
 ## Tests & coverage
-1 From the `app/` directory, call the command:
+
+1. From the `app/` directory, call the command:
 ```bash
 coverage run -m pytest .
 ```
-2. to generate a report call the command.
+2. To generate a report call the command.
 ```bash
 coverage report -m
 ```
